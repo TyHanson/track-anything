@@ -123,6 +123,7 @@ class DefineDataTypes(QWidget) :
         self.home = QPushButton("Return Home", self)
         self.layout.addWidget(self.home)
         self.home.clicked.connect(lambda: self.return_home())
+        self.date_title = self.attribute_names[self.current_index]
 
         p1 = QLabel("Select Your Date Input Order")
         p2 = QLabel("You will enter dates into your tracker as three independent integer values of Month, Day, and Year.")
@@ -132,18 +133,18 @@ class DefineDataTypes(QWidget) :
         self.layout.addWidget(p2, 2, 0, 1, 2)
         self.layout.addWidget(p3, 3, 0, 1, 2)
 
-        self.firstTime = QLabel(f"{self.attribute_names[self.current_index]}: Month")
-        self.secondTime = QLabel(f"{self.attribute_names[self.current_index]}: Day")
-        self.thirdTime = QLabel(f"{self.attribute_names[self.current_index]}: Year")
+        self.firstTime = QLabel(f"{date_title}: Month")
+        self.secondTime = QLabel(f"{date_title}: Day")
+        self.thirdTime = QLabel(f"{date_title}: Year")
         self.labels = [self.firstTime, self.secondTime, self.thirdTime]
         
-        choices = ['Month', 'Day', 'Year']
+        self.choices = ['Month', 'Day', 'Year']
         self.answers = dict()
         self.finished = False
-        for i in range(len(choices)) :
+        for i in range(len(self.choices)) :
             print(self.answers)
             choice = QComboBox()
-            choice.addItems(choices)
+            choice.addItems(self.choices)
             choice.currentTextChanged.connect(lambda: self.define_date_rewrite_preview())
             choice.setCurrentIndex(i)
             self.answers[i] = choice
@@ -167,20 +168,38 @@ class DefineDataTypes(QWidget) :
         self.layout.addWidget(emptyFill3, 10, 1, 1, 1)
         
         submit = QPushButton("Submit Date Order", self)
-        submit.clicked.connect(lambda: self.further_definitions(remaining_attributes))
+        submit.clicked.connect(lambda: self.define_date_wrapup())
         self.layout.addWidget(submit, 11, 0, 1, 2)
         # self.further_definitions(remaining_attributes)
 
     def define_date_rewrite_preview(self) :
         # implement functionality to change the value of the choices to always have all 3 input at once. It should switch things around.
+        # ok do this later actually bc i dont wanna rn, adding in error statement instead so people HAVE to have all 3 instead
         if self.finished :
             for i in range(len(self.labels)) :
                 current_time = self.answers[i].currentText()
-                self.labels[i].setText(f"{self.attribute_names[self.current_index]}: {current_time}")
+                self.labels[i].setText(f"{self.date_title}: {current_time}")
             print("Changed define_data QComboBox Value")
 
+
     def define_date_wrapup(self) :
-        pass
+        time_entries = [entry.getCurrentText() for entry in self.answers.values()]
+        if set(time_entries) == set(self.choices) :
+            self.layout.removeWidget(self.error)
+            for i in range(1 + len(time_entries)) :
+                if time_entries[i] == "Month" :
+                    self.attributes_final.append(f"Month{i};{}}")
+                    pass
+                if time_entries[i] == "Day" :
+                    pass
+                if time_entries[i] == "Year" :
+                    pass
+
+            # add properly formatted titles to the self.attributes_final.append(current_attribute) and then call further_definitions
+            pass
+        else :
+            self.error = QLabel("You need to have all three of: Month, Day, and Year selected to proceed. Please select all three.")
+            self.layout.addWidget(self.error, 12, 0, 1, 2)
 
     def define_duration(self, remaining_attributes) :
 
