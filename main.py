@@ -31,7 +31,7 @@ if __name__ == "__main__" :
     app = QApplication(sys.argv)
 
     # Establish SQLLite3 database connection
-    connection = sql.connect("Test.db")
+    connection = sql.connect("track_anything_center.db")
     cursor = connection.cursor()
     
     # Create stack and controller
@@ -67,10 +67,9 @@ if __name__ == "__main__" :
     for i in range(controller.wm.stacked_widget.count()) :
         curr_window = controller.wm.stacked_widget.widget(i)
         if hasattr(curr_window, "pre_init") :
-            print(f'running pre_init on widget {controller.wm.stacked_widget.widget(i)}')
             curr_window.pre_init(controller)
 
     window.show()
-    print('showing window')
+    print('Successfully ran pre_init on all windows. Starting application...')
 
     app.exec()
