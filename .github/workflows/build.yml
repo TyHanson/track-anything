@@ -1,0 +1,45 @@
+Add Workflow Configuration: Copy and paste the following code into build.yml:
+
+yaml
+Copy
+Edit
+name: Build and Release Executable
+
+on:
+  push:
+    branches:
+      - main
+  release:
+    types: [created]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.x'  # Adjust to your Python version
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pyinstaller
+          pip install -r requirements.txt  # Make sure to have this file
+
+      - name: Build Executable
+        run: |
+          pyinstaller --onefile --windowed --add-data "ui;ui" --add-data "util;util" main.py
+
+      - name: Create Release
+        id: create_release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag: ${{ github.ref }}
+          files: dist/main.exe  # Path to the generated .exe
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
