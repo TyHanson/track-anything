@@ -30,13 +30,23 @@ jobs:
         run: |
           pip install pyinstaller
           pyinstaller --onefile --name "track_anything" --add-data "ui;ui" --add-data "util;util" main.py 
+
+      - name: Create output directory
+        run: |
+          mkdir track_anything_release
+          move dist\track_anything.exe track_anything_release\
+
+      - name: Zip the output directory
+        run: |
+          powershell -Command "Compress-Archive -Path track_anything_release\* -DestinationPath track_anything_release.zip"
+
       - name: Create Release
         id: create_release
         uses: softprops/action-gh-release@v1
         with:
           tag_name: "v${{ github.run_number }}"  # Create a new tag based on the run number
           files: |
-            dist/track_anything.exe
+            track_anything_release.zip
           name: Release v${{ github.run_number }}  # Release name
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Use the GITHUB_TOKEN for authentication
