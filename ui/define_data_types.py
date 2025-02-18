@@ -536,7 +536,7 @@ class DefineDataTypes(QWidget) :
     # All trackers will have an id column for a primary key.
     def create_db(self) :
         # Create beginning of the final command (a SQL query that we build from each of the datatypes)
-        final_command = f"CREATE TABLE {self.tracker_name} (id INTEGER PRIMARY KEY AUTOINCREMENT, "
+        final_command = f'CREATE TABLE "{self.tracker_name}" (id INTEGER PRIMARY KEY AUTOINCREMENT, '
         for i in range(len(self.attributes_final)) :
             current_char = ''
             total_str = ''

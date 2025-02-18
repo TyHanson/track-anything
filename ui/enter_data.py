@@ -389,7 +389,7 @@ class EnterData(QWidget) :
         del self.encoded_attributes[0]
         used_columns = tuple(self.encoded_attributes)
         print(f'Now Executing...')
-        print(f"INSERT INTO {self.stored_title} {used_columns} VALUES {final}")
+        print(f'INSERT INTO "{self.stored_title}" {used_columns} VALUES {final}')
         self.ctrl.cur.execute(f"INSERT INTO {self.stored_title} {used_columns} VALUES {final}")
         self.ctrl.con.commit()
         print(f'Finished adding data into {self.stored_title}. Returning home...')

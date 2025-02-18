@@ -29,7 +29,7 @@ jobs:
       - name: Build executable
         run: |
           pip install pyinstaller
-          pyinstaller --onefile --name "track_anything" --add-data "ui;ui" --add-data "util;util" main.py 
+          pyinstaller --onefile --noconsole --name "track_anything" --add-data "ui;ui" --add-data "util;util" main.py 
 
       - name: Create output directory
         run: |
