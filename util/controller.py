@@ -3,6 +3,7 @@ from PyQt5.QtWidgets import QPushButton, QLineEdit, QLabel,  QVBoxLayout, QGridL
 
 import sqlite3 as sql
 import re
+from decimal import Decimal, ROUND_DOWN
 
 from .window_manager import WindowManager
 
@@ -152,25 +153,51 @@ class Controller(QWidget) :
         total_seconds += time_values[4]
         return total_seconds
 
-    # THIS DOESNT WORK YET, you need to implement functionality to indicate which one is the "last" time value and assign the remainder to that.
-    # Seconds isn't guaranteed to always be last!
-    def duration_to_split(self, total_seconds, weeks, days, hours, minutes, seconds) :
+    # 5, 4, 3, 2, 1 = Weeks, Days, Hours, Minutes, Seconds
+    def duration_to_split(self, total_seconds, time_value_conditionals) :
         time_values = [0, 0, 0, 0, 0]
+        to_look_at = []
+        value = 5
+        for check in time_value_conditionals :
+            if check :
+                to_look_at.append(value)
+            value -= 1
+
         remainder = total_seconds
-        if weeks :
-            time_values[0] = remainder // (7 * 24 * 60 * 60)
-            remainder = remainder % (7 * 24 * 60 * 60)
-        if days :
-            time_values[1] = remainder // (24 * 60 * 60)
-            remainder = remainder % (24 * 60 * 60)
-        if hours :
-            time_values[2] = remainder // (60 * 60)
-            remainder = remainder % (60 * 60)
-        if minutes :
-            time_values[3] = remainder // (60)
-            remainder = remainder % (60)
-        if seconds :
-            time_values[4] = remainder
+        for i in range(len(to_look_at)) :
+            time_value = to_look_at[i]
+            final = False
+            if time_value == to_look_at[-1] :
+                final = True
+
+            if time_value == 5 :
+                time_values[0] = remainder // (7 * 24 * 60 * 60)
+                remainder = remainder % (7 * 24 * 60 * 60)
+                if final :
+                    true_remainder = Decimal(str(remainder / (7 * 24 * 60 * 60))).quantize(Decimal('0.001'), rounding=ROUND_DOWN)
+                    time_values[0] += float(true_remainder)
+            if time_value == 4 :
+                time_values[1] = remainder // (24 * 60 * 60)
+                remainder = remainder % (24 * 60 * 60)
+                if final :
+                    true_remainder = Decimal(str(remainder / (24 * 60 * 60))).quantize(Decimal('0.001'), rounding=ROUND_DOWN)
+                    time_values[1] += float(true_remainder)
+            if time_value == 3 :
+                time_values[2] = remainder // (60 * 60)
+                remainder = remainder % (60 * 60)
+                if final :
+                    true_remainder = Decimal(str(remainder / (60 * 60))).quantize(Decimal('0.001'), rounding=ROUND_DOWN)
+                    time_values[2] += float(true_remainder)
+            if time_value == 2 :
+                time_values[3] = remainder // (60)
+                remainder = remainder % (60)
+                if final :
+                    true_remainder = Decimal(str(remainder / (60))).quantize(Decimal('0.001'), rounding=ROUND_DOWN)
+                    time_values[3] += float(true_remainder)
+            if time_value == 1 :
+                time_values[4] = remainder
+
+        return time_values
     
     def convert_sql_to_attribute_types (self, sql_datatypes) :
 

@@ -11,7 +11,10 @@ class SelectTable(QWidget) :
         super().__init__()
         self.layout = QVBoxLayout()
         self.mapTo = mapTo
-
+    
+    # Runs every time the widget switches to this window.
+    def showEvent(self, event):
+        super().showEvent(event)
         # Button to Return Home with No Table
         self.home = QPushButton("Return Home", self)
         self.layout.addWidget(self.home)
@@ -21,10 +24,7 @@ class SelectTable(QWidget) :
         self.layout.addWidget(prompt)
 
         self.setLayout(self.layout)
-    ''''''     
-    # Runs every time the widget switches to this window.
-    def showEvent(self, event):
-        super().showEvent(event)
+
         self.dropdown = QComboBox()
         tracker_names = self.ctrl.get_all_tracker_names()
         self.dropdown.addItems(tracker_names)
@@ -40,15 +40,19 @@ class SelectTable(QWidget) :
     # close opened connection.
     def reset_and_send(self) :
         title = self.dropdown.currentText()
-        print(f'Title is {title}')
         self.ctrl.data = title
         self.layout.removeWidget(self.dropdown)
         self.layout.removeWidget(self.submit)
+        self.deconstruct_layout()
         self.ctrl.wm.navigate_to(self.mapTo)
 
     def return_home(self) :
-        self.layout.removeWidget(self.dropdown)
+        self.deconstruct_layout()
         self.ctrl.wm.navigate_to(0)
+
+    def deconstruct_layout(self) :
+        for i in reversed(range(self.layout.count())): 
+            self.layout.itemAt(i).widget().setParent(None)
 
     def pre_init(self, controller) :
         self.ctrl = controller

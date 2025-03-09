@@ -9,9 +9,13 @@ class CreateTable(QWidget):
         self.accepting_entries = True
         self.entries = []
         self.title = ""
+        self.valid = True
 
         # Error Creation (if necessary)
         self.error = QLabel("Your either do not have at least one column name, or your tracker has no title.")
+
+    def showEvent(self, event):
+        super().showEvent(event)
 
         # Prompt for Titles
         self.title_prompt = QLabel("Please enter a Title")
@@ -57,21 +61,31 @@ class CreateTable(QWidget):
         # Button to Return Home with No Table
         self.home_button = QPushButton("Return Home", self)
         self.layout.addWidget(self.home_button)
-        self.home_button.clicked.connect(lambda: self.ctrl.wm.navigate_to(0))
+        self.home_button.clicked.connect(lambda: self.return_home())
 
         self.setLayout(self.layout)
 
     def submit_input(self) :
         if self.accepting_entries :
             entry = self.line_entry.text()
-            self.entries.append(entry)
-            self.history_label.setText(f"History:\n" + "\n".join(self.entries))
-            self.line_entry.clear()
+            if entry == '' :
+                self.valid = False
+            if self.valid :
+                self.entries.append(entry)
+                self.history_label.setText(f"History:\n" + "\n".join(self.entries))
+                self.line_entry.clear()
+            else :
+                self.valid = True
 
     def title_input(self) :
         self.title = self.title_entry.text()
-        self.current_title.setText(f"Current Title: " + self.title)
-        self.title_entry.clear()
+        if self.title == '' :
+            self.valid = False
+        if self.valid :
+            self.current_title.setText(f"Current Title: " + self.title)
+            self.title_entry.clear()
+        else :
+            self.valid = True
     
     def end_input(self) :
         # Clean up entry phase
@@ -86,11 +100,20 @@ class CreateTable(QWidget):
             self.title = ""
             self.entries = []
             print(f'now controller data is {self.ctrl.data}')
+            self.deconstruct_layout()
             self.ctrl.wm.navigate_to(4)
             # COMMENTED OUT FOR TESTING ON VIEWING TABLES W/O DATA TYPE MODS self.ctrl.wm.navigate_to(4)
         else :
             self.layout.addWidget(self.error)
             self.error.show()
+
+    def deconstruct_layout(self) :
+        for i in reversed(range(self.layout.count())): 
+            self.layout.itemAt(i).widget().setParent(None)
+
+    def return_home(self) :
+        self.deconstruct_layout()
+        self.ctrl.wm.navigate_to(0)
 
     def pre_init(self, controller) :
         self.ctrl = controller

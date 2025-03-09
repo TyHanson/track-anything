@@ -2,6 +2,7 @@ import sys
 import sqlite3 as sql
 import re
 import datetime
+import os
 
 from ui.create_table import CreateTable
 from ui.define_data_types import DefineDataTypes
@@ -25,6 +26,8 @@ from PyQt5.QtSql import QSqlDatabase
 # Inputs: 
 #   stacked_widget (PyQt Stacked Widget): Contains all windows of program
 #   data (default to string ''): Can be reassigned to send data between windows
+
+# Autoupdate Feature
 
 
 if __name__ == "__main__" :
@@ -51,7 +54,7 @@ if __name__ == "__main__" :
     
     view_data = ViewData(controller) # index 5
     # edit mode maybe? when we get around to this
-    view_edit_data_table_select = SelectTable(controller, mapTo = 6) # index 6
+    view_edit_data_table_select = SelectTable(controller, mapTo = 5) # index 6
 
     # Add widgets to window_stack
     window_stack.addWidget(home_screen)                 # index 0
@@ -69,6 +72,10 @@ if __name__ == "__main__" :
         if hasattr(curr_window, "pre_init") :
             curr_window.pre_init(controller)
 
+    # define size for applicaiton
+    window.resize(800, 600)
+    window.setMinimumSize(600, 400)
+    
     window.show()
     print('Successfully ran pre_init on all windows. Starting application...')
 
